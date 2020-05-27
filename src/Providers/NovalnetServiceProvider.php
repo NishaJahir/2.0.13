@@ -376,7 +376,8 @@ class NovalnetServiceProvider extends ServiceProvider
 									} 
 								} 
 							}
-								
+							$this->getLogger(__METHOD__)->error('content', $content);
+			    $this->getLogger(__METHOD__)->error('contenttype', $contentType);
 								$event->setValue($content);
 								$event->setType($contentType);
 						
