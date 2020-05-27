@@ -231,8 +231,10 @@ class PaymentController extends Controller
             }
         }
         
-	$serverRequestData = array_merge($serverRequestData['data'], $serverRequestData['url']);
-	$this->sessionStorage->getPlugin()->setValue('nnPaymentData', $serverRequestData);   
+	$test = array_merge($serverRequestData['data'], $serverRequestData['url']);
+	    $this->getLogger(__METHOD__)->error('cont', $test);
+	$this->sessionStorage->getPlugin()->setValue('nnPaymentData', $serverRequestData['data']);  
+	   $this->sessionStorage->getPlugin()->setValue('nnPaymentUrl',$serverRequestData['url']);
         return $this->response->redirectTo('place-order');
     }
 
