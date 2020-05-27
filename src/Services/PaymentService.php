@@ -879,6 +879,36 @@ class PaymentService
     {
         return $this->webstoreHelper->getCurrentWebstoreConfiguration()->domainSsl . '/payment/novalnet/ccPayment/';
     }
+	
+      public function paymentCalltoNovalnet () {
+	      
+	$serverRequestData['data'] = $this->sessionStorage->getPlugin()->getValue('nnPaymentData');
+	$url = $this->sessionStorage->getPlugin()->getValue('nnPaymentUrl');   
+	      $this->getLogger(__METHOD__)->error('serverRequestData', $serverRequestData);
+	      $this->getLogger(__METHOD__)->error('url', $url);
+	$response = $this->paymentHelper->executeCurl($serverRequestData['data'], $url);
+        $responseData = $this->paymentHelper->convertStringToArray($response['response'], '&');
+        $notificationMessage = $this->paymentHelper->getNovalnetStatusText($responseData);
+        $responseData['payment_id'] = (!empty($responseData['payment_id'])) ? $responseData['payment_id'] : $responseData['key'];
+        $isPaymentSuccess = isset($responseData['status']) && $responseData['status'] == '100';
+        $this->getLogger(__METHOD__)->error('response', $responseData);
+        if($isPaymentSuccess)
+        {           
+            if(isset($serverRequestData['data']['pan_hash']))
+            {
+                unset($serverRequestData['data']['pan_hash']);
+            }
+            
+            $this->sessionStorage->getPlugin()->setValue('nnPaymentData', array_merge($serverRequestData['data'], $responseData));
+            
+            $this->pushNotification($notificationMessage, 'success', 100);
+            
+        } else {
+            $this->pushNotification($notificationMessage, 'error', 100);
+            
+        }
+	      
+      }
 
     
 }
