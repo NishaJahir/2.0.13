@@ -32,6 +32,8 @@ use Novalnet\Models\TransactionLog;
 use Plenty\Modules\Payment\History\Contracts\PaymentHistoryRepositoryContract;
 use Plenty\Modules\Payment\History\Models\PaymentHistory as PaymentHistoryModel;
 use Plenty\Modules\Payment\Contracts\PaymentRepositoryContract;
+use Plenty\Plugin\Http\Request;
+use Plenty\Plugin\Http\Response;
 /**
  * Class PaymentService
  *
@@ -85,7 +87,8 @@ class PaymentService
     /**
      * @var TransactionLogData
      */
-    private $transactionLogData;
+    private $transactionLogData; 
+    private $response;
     
     private $redirectPayment = ['NOVALNET_SOFORT', 'NOVALNET_PAYPAL', 'NOVALNET_IDEAL', 'NOVALNET_EPS', 'NOVALNET_GIROPAY', 'NOVALNET_PRZELEWY'];
 
@@ -108,6 +111,7 @@ class PaymentService
                                 PaymentHelper $paymentHelper,
                                 PaymentHistoryRepositoryContract $paymentHistoryRepo,
                                 PaymentRepositoryContract $paymentRepository,
+				Response $response,
                                 TransactionService $transactionLogData)
     {
         $this->config                   = $config;
@@ -118,6 +122,7 @@ class PaymentService
         $this->paymentHistoryRepo       = $paymentHistoryRepo;
         $this->paymentRepository        = $paymentRepository;
         $this->paymentHelper            = $paymentHelper;  
+	$this->response        = $response;    
         $this->transactionLogData       = $transactionLogData;
     }
     
@@ -876,6 +881,7 @@ class PaymentService
             
         } else {
             $this->pushNotification($notificationMessage, 'error', 100);
+	     return $this->response->redirectTo('checkout');
         }
 	      
       }
