@@ -855,10 +855,13 @@ class PaymentService
 	
       public function paymentCalltoNovalnetServer () {
 	      
-	$serverRequestData = $this->sessionStorage->getPlugin()->getValue('nnPaymentData');
-	$serverRequestData['order_no'] = $this->sessionStorage->getPlugin()->getValue('nnOrderNo');
+	$serverRequestData['data'] = $this->sessionStorage->getPlugin()->getValue('nnPaymentData');
+	$serverRequestData['data']['order_no'] = $this->sessionStorage->getPlugin()->getValue('nnOrderNo');
+	$serverRequestData['url'] = $this->sessionStorage->getPlugin()->getValue('nnPaymentUrl');
         $this->getLogger(__METHOD__)->error('serverRequestData', $serverRequestData);
-	$response = $this->paymentHelper->executeCurl($serverRequestData, $serverRequestData['url']);
+	 $paymentUrl = $this->sessionStorage->getPlugin()->getValue('nnPaymentUrl');  
+	      $this->getLogger(__METHOD__)->error('url', $paymentUrl);
+	$response = $this->paymentHelper->executeCurl($serverRequestData['data'], $serverRequestData['url']);
         $responseData = $this->paymentHelper->convertStringToArray($response['response'], '&');
         $notificationMessage = $this->paymentHelper->getNovalnetStatusText($responseData);
         $responseData['payment_id'] = (!empty($responseData['payment_id'])) ? $responseData['payment_id'] : $responseData['key'];
