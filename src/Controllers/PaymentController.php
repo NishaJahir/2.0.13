@@ -252,7 +252,9 @@ class PaymentController extends Controller
                                                                 'nnPaymentUrl' => $paymentUrl
                                    ]);
     }
-	
-	
+	  
+    public function new () {
+	$this->getLogger(__METHOD__)->error('calling', 'enter');    
+    }
 	
 }
