@@ -259,6 +259,7 @@ class NovalnetServiceProvider extends ServiceProvider
 						} elseif ($paymentKey == 'NOVALNET_CC') { # Credit Card
                             $encodedKey = base64_encode('vendor='.$paymentHelper->getNovalnetConfig('novalnet_vendor_id').'&product='.$paymentHelper->getNovalnetConfig('novalnet_product_id').'&server_ip='.$paymentHelper->getServerAddress().'&lang='.$sessionStorage->getLocaleSettings()->language);
                             $nnIframeSource = 'https://secure.novalnet.de/cc?api=' . $encodedKey;
+							$this->getLogger(__METHOD__)->error('cc', 'enter');
                             $content = $twig->render('Novalnet::PaymentForm.NOVALNET_CC', [
 								'nnCcFormUrl' 			=> $nnIframeSource,
 								'nnPaymentProcessUrl' 	=> $paymentService->getProcessPaymentUrl(),
@@ -372,6 +373,7 @@ class NovalnetServiceProvider extends ServiceProvider
                     $sessionStorage->getPlugin()->setValue('paymentkey', $paymentKey);
 
                     if(!$paymentService->isRedirectPayment($paymentKey)) {
+			    $this->getLogger(__METHOD__)->error('order creation', 'called');
                         $paymentService->validateResponse();
                     } else {
                         $paymentProcessUrl = $paymentService->getRedirectPaymentUrl();
