@@ -272,4 +272,16 @@ class PaymentController extends Controller
                                                                 'nnPaymentUrl' => $paymentUrl
                                    ]);
     }
+	public function ccPayment(){
+	    $encodedKey = base64_encode('vendor='.$this->paymentHelper->getNovalnetConfig('novalnet_vendor_id').'&product='.$this->paymentHelper->getNovalnetConfig('novalnet_product_id').'&server_ip='.$this->paymentHelper->getServerAddress().'&lang='.'en');
+	    $nnIframeSource = 'https://secure.novalnet.de/cc?api=' . $encodedKey;
+	  
+	     return $twig->render('Novalnet::PaymentForm.NOVALNET_CC', [
+						'nnCcFormUrl'           => $nnIframeSource,
+						'nnPaymentProcessUrl' 	=>  $this->getProcessPaymentUrl(),
+						'paymentMopKey'     	=>  'NOVALNET_CC',
+					        'paymentName' => 'Credit Card',
+						'nnFormDesign'  		=>  $this->getCcDesignConfig()
+		       ]);
+	}
 }
