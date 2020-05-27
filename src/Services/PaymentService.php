@@ -193,10 +193,7 @@ class PaymentService
             $transactionData['callback_amount'] = 0;    
 
         $this->transactionLogData->saveTransaction($transactionData);
-        
-        if(!$this->isRedirectPayment(strtoupper($nnPaymentData['payment_method']))) {
-            $this->sendPostbackCall($nnPaymentData);
-        }
+
      }
      
     /**
@@ -445,31 +442,7 @@ class PaymentService
         return $url;
     }
 
-    /**
-     * Send postback call to server for updating the order number for the transaction
-     *
-     * @param array $requestData
-     */
-    public function sendPostbackCall($requestData)
-    {
-        $postbackData = [
-            'vendor'         => $requestData['vendor'],
-            'product'        => $requestData['product'],
-            'tariff'         => $requestData['tariff'],
-            'auth_code'      => $requestData['auth_code'],
-            'key'            => $requestData['payment_id'],
-            'status'         => 100,
-            'tid'            => $requestData['tid'],
-            'order_no'       => $requestData['order_no'],
-            'remote_ip'      => $this->paymentHelper->getRemoteAddress()
-        ];
-
-        if(in_array($requestData['payment_id'], ['27', '41']))
-        {
-            $postbackData['invoice_ref'] = 'BNR-' . $requestData['product'] . '-' . $requestData['order_no'];
-        }
-        $this->paymentHelper->executeCurl($postbackData, NovalnetConstants::PAYPORT_URL);
-    }
+    
     
     /**
      * Check if the payment is redirection or not
@@ -880,13 +853,12 @@ class PaymentService
         return $this->webstoreHelper->getCurrentWebstoreConfiguration()->domainSsl . '/payment/novalnet/ccPayment/';
     }
 	
-      public function paymentCalltoNovalnet () {
+      public function paymentCalltoNovalnetServer () {
 	      
-	$serverRequestData['data'] = $this->sessionStorage->getPlugin()->getValue('nnPaymentData');
-	$url = $this->sessionStorage->getPlugin()->getValue('nnPaymentUrl');   
-	      $this->getLogger(__METHOD__)->error('serverRequestData', $serverRequestData);
-	      $this->getLogger(__METHOD__)->error('url', $url);
-	$response = $this->paymentHelper->executeCurl($serverRequestData['data'], $url);
+	$serverRequestData = $this->sessionStorage->getPlugin()->getValue('nnPaymentData');
+	$serverRequestData['order_no'] = $this->sessionStorage->getPlugin()->getValue('nnOrderNo');
+        $this->getLogger(__METHOD__)->error('serverRequestData', $serverRequestData);
+	$response = $this->paymentHelper->executeCurl($serverRequestData, $serverRequestData['url']);
         $responseData = $this->paymentHelper->convertStringToArray($response['response'], '&');
         $notificationMessage = $this->paymentHelper->getNovalnetStatusText($responseData);
         $responseData['payment_id'] = (!empty($responseData['payment_id'])) ? $responseData['payment_id'] : $responseData['key'];
@@ -900,12 +872,10 @@ class PaymentService
             }
             
             $this->sessionStorage->getPlugin()->setValue('nnPaymentData', array_merge($serverRequestData['data'], $responseData));
-            
             $this->pushNotification($notificationMessage, 'success', 100);
             
         } else {
             $this->pushNotification($notificationMessage, 'error', 100);
-            
         }
 	      
       }
