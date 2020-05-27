@@ -162,7 +162,7 @@ class PaymentController extends Controller
                 $this->paymentService->pushNotification($notificationMessage, 'error', 100);
                 return $this->response->redirectTo('checkout');
 	    }
-        $this->sessionStorage->getPlugin()->setValue('nnPaymentData', $serverRequestData['data']);
+        
         $guarantee_payments = [ 'NOVALNET_SEPA', 'NOVALNET_INVOICE' ];        
         if($requestData['paymentKey'] == 'NOVALNET_CC') {
             $serverRequestData['data']['pan_hash'] = $requestData['nn_pan_hash'];
@@ -230,30 +230,11 @@ class PaymentController extends Controller
                 }
             }
         }
-
-        $response = $this->paymentHelper->executeCurl($serverRequestData['data'], $serverRequestData['url']);
-        $responseData = $this->paymentHelper->convertStringToArray($response['response'], '&');
-        $notificationMessage = $this->paymentHelper->getNovalnetStatusText($responseData);
-        $responseData['payment_id'] = (!empty($responseData['payment_id'])) ? $responseData['payment_id'] : $responseData['key'];
-        $isPaymentSuccess = isset($responseData['status']) && $responseData['status'] == '100';
         
-        if($isPaymentSuccess)
-        {           
-            if(isset($serverRequestData['data']['pan_hash']))
-            {
-                unset($serverRequestData['data']['pan_hash']);
-            }
-
-            $this->sessionStorage->getPlugin()->setValue('nnPaymentData', array_merge($serverRequestData['data'], $responseData));
-            
-            $this->paymentService->pushNotification($notificationMessage, 'success', 100);
-            // Redirect to the success page.
-            return $this->response->redirectTo('place-order');
-        } else {
-            $this->paymentService->pushNotification($notificationMessage, 'error', 100);
-            // Redirects to the checkout page.
-            return $this->response->redirectTo('checkout');
-        }
+	    
+	$this->sessionStorage->getPlugin()->setValue('nnPaymentData', $serverRequestData['data']);
+	$this->sessionStorage->getPlugin()->setValue('nnPaymentUrl', $serverRequestData['url']);   
+        
     }
 
     /**
