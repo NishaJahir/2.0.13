@@ -847,9 +847,9 @@ class PaymentService
 		return $this->webstoreHelper->getCurrentWebstoreConfiguration()->domainSsl . '/place-order/';
 	}
 	
-	public function getCcPaymentUrl()
+	public function getnew()
     {
-        return $this->webstoreHelper->getCurrentWebstoreConfiguration()->domainSsl . '/payment/novalnet/ccPayment/';
+        return $this->webstoreHelper->getCurrentWebstoreConfiguration()->domainSsl . '/payment/novalnet/new/';
     }
 	
       public function paymentCalltoNovalnetServer () {
