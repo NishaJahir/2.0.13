@@ -261,7 +261,7 @@ class NovalnetServiceProvider extends ServiceProvider
                             $nnIframeSource = 'https://secure.novalnet.de/cc?api=' . $encodedKey;
                             $content = $twig->render('Novalnet::PaymentForm.NOVALNET_CC', [
 								'nnCcFormUrl' 			=> $nnIframeSource,
-								'nnPaymentProcessUrl' 	=> $paymentService->getProcessPaymentUrl(),
+								'nnPaymentProcessUrl' 	=> $paymentService->getPlaceOrderUrl(),
 								'paymentMopKey'     	=>  $paymentKey,
 				    			'paymentName' => $paymentName,
 								'nnFormDesign'  		=>  $paymentService->getCcDesignConfig()
