@@ -337,7 +337,7 @@ class NovalnetServiceProvider extends ServiceProvider
 											$serverRequestData['data']['key'] = '41';
 										        $serverRequestData['data']['birth_date'] = !empty($birthday) ? $birthday : '';
 										}
-									$this->getLogger(__METHOD__)->erro('direct', $serverRequestData);
+									$this->getLogger(__METHOD__)->error('direct', $serverRequestData);
 									$sessionStorage->getPlugin()->setValue('nnPaymentData', $serverRequestData);
 									
 									}
