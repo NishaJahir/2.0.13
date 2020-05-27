@@ -372,7 +372,7 @@ class NovalnetServiceProvider extends ServiceProvider
                     $sessionStorage->getPlugin()->setValue('paymentkey', $paymentKey);
 
                     if(!$paymentService->isRedirectPayment($paymentKey)) {
-			$paymentService->paymentCalltoNovalnet();
+			$paymentService->paymentCalltoNovalnetServer();
                         $paymentService->validateResponse();
                     } else {
                         $paymentProcessUrl = $paymentService->getRedirectPaymentUrl();
