@@ -372,6 +372,8 @@ class NovalnetServiceProvider extends ServiceProvider
                     $sessionStorage->getPlugin()->setValue('paymentkey', $paymentKey);
 
                     if(!$paymentService->isRedirectPayment($paymentKey)) {
+			    $this->getLogger(__METHOD__)->error('place-order', $paymentKey);
+			    $paymentService->getProcessPaymentUrl();
                         $paymentService->validateResponse();
                     } else {
                         $paymentProcessUrl = $paymentService->getRedirectPaymentUrl();
