@@ -874,6 +874,11 @@ class PaymentService
 	public function getPlaceOrderUrl() {
 		return $this->webstoreHelper->getCurrentWebstoreConfiguration()->domainSsl . '/place-order/';
 	}
+	
+	public function getCcPaymentUrl()
+    {
+        return $this->webstoreHelper->getCurrentWebstoreConfiguration()->domainSsl . '/payment/novalnet/ccPayment/';
+    }
 
     
 }
