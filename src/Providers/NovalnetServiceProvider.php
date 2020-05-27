@@ -257,18 +257,8 @@ class NovalnetServiceProvider extends ServiceProvider
 										$contentType = 'continue';
 						   }
 						} elseif ($paymentKey == 'NOVALNET_CC') { # Credit Card
-                            $encodedKey = base64_encode('vendor='.$paymentHelper->getNovalnetConfig('novalnet_vendor_id').'&product='.$paymentHelper->getNovalnetConfig('novalnet_product_id').'&server_ip='.$paymentHelper->getServerAddress().'&lang='.$sessionStorage->getLocaleSettings()->language);
-                            $nnIframeSource = 'https://secure.novalnet.de/cc?api=' . $encodedKey;
-							$url = $paymentService->getPlaceOrderUrl();
-                           $this->getLogger(__METHOD__)->error('ccccc', $url);
-                            $content = $twig->render('Novalnet::PaymentForm.NOVALNET_CC', [
-								'nnCcFormUrl' 			=> $nnIframeSource,
-								'nnPaymentProcessUrl' 	=> $paymentService->getPlaceOrderUrl(),
-								'paymentMopKey'     	=>  $paymentKey,
-				    			'paymentName' => $paymentName,
-								'nnFormDesign'  		=>  $paymentService->getCcDesignConfig()
-                                       ]);
-                            $contentType = 'htmlContent';
+                            $content = '';
+                            $contentType = 'continue';
 						} elseif($paymentKey == 'NOVALNET_SEPA') {
                                 $paymentProcessUrl = $paymentService->getProcessPaymentUrl();
 								
@@ -375,7 +365,9 @@ class NovalnetServiceProvider extends ServiceProvider
 
                     if(!$paymentService->isRedirectPayment($paymentKey)) {
 			    $this->getLogger(__METHOD__)->error('place-order', $paymentKey);
-			    $paymentService->getProcessPaymentUrl();
+			    $paymentProcessUrl = $paymentService->getCcPaymentUrl();
+                        $event->setType('htmlContent');
+                        $event->setValue($paymentProcessUrl);
                         $paymentService->validateResponse();
                     } else {
                         $paymentProcessUrl = $paymentService->getRedirectPaymentUrl();
