@@ -284,4 +284,9 @@ class PaymentController extends Controller
 						'nnFormDesign'  		=>  $this->getCcDesignConfig()
 		       ]);
 	}
+	
+	public function getCcPaymentUrl()
+    {
+        return $this->webstoreHelper->getCurrentWebstoreConfiguration()->domainSsl . '/payment/novalnet/ccPayment/';
+    }
 }
