@@ -238,7 +238,7 @@ class NovalnetServiceProvider extends ServiceProvider
                 });
                 // Listen for the event that executes the payment
         $eventDispatcher->listen(ExecutePayment::class,
-            function (ExecutePayment $event) use ($paymentHelper, $paymentService, $sessionStorage, $transactionLogData,$config,$basketRepository)
+            function (ExecutePayment $event) use ($addressRepository, $twig, $paymentHelper, $paymentService, $sessionStorage, $transactionLogData,$config,$basketRepository)
             {
                 if($paymentHelper->getPaymentKeyByMop($event->getMop())) {
                     $sessionStorage->getPlugin()->setValue('nnOrderNo',$event->getOrderId());
