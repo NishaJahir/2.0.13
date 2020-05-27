@@ -285,8 +285,5 @@ class PaymentController extends Controller
 		       ]);
 	}
 	
-	public function getCcPaymentUrl()
-    {
-        return $this->webstoreHelper->getCurrentWebstoreConfiguration()->domainSsl . '/payment/novalnet/ccPayment/';
-    }
+	
 }
