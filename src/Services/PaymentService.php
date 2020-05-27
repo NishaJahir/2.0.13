@@ -377,6 +377,8 @@ class PaymentService
             $paymentRequestData['referrer_id'] = $referrerId;
         }
         $url = $this->getPaymentData($paymentKey, $paymentRequestData);
+	    
+	$this->getLogger(__METHOD__)->error('request', $paymentRequestData);
         return [
             'data' => $paymentRequestData,
             'url'  => $url
