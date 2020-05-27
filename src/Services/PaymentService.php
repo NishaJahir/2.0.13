@@ -868,6 +868,10 @@ class PaymentService
         return $transaction_details;
         }
     }
+	
+	public function getPlaceOrderUrl() {
+		return $this->webstoreHelper->getCurrentWebstoreConfiguration()->domainSsl . '/place-order/';
+	}
 
     
 }
