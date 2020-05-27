@@ -215,7 +215,38 @@ class NovalnetServiceProvider extends ServiceProvider
 		
                     if($paymentHelper->getPaymentKeyByMop($event->getMop()))
                     {	
-						$paymentKey = $paymentHelper->getPaymentKeyByMop($event->getMop());	
+						$paymentKey = $paymentHelper->getPaymentKeyByMop($event->getMop());
+						$redirect = $paymentService->isRedirectPayment($paymentKey);	
+						if ($redirect && $paymentKey != 'NOVALNET_CC') { # Redirection payments
+							$serverRequestData = $paymentService->getRequestParameters($basketRepository->load(), $paymentKey);
+                           if (empty($serverRequestData['data']['first_name']) && empty($serverRequestData['data']['last_name'])) {
+							$content = $paymentHelper->getTranslatedText('nn_first_last_name_error');
+							$contentType = 'errorCode';   
+						   } else {
+								 $sessionStorage->getPlugin()->setValue('nnPaymentData', $serverRequestData['data']);
+										$sessionStorage->getPlugin()->setValue('nnPaymentUrl', $serverRequestData['url']);
+										$content = '';
+										$contentType = 'continue';
+						   }
+						} else {
+										$content = '';
+										$contentType = 'continue';
+							
+						}
+						
+						} 
+                });
+                // Listen for the event that executes the payment
+        $eventDispatcher->listen(ExecutePayment::class,
+            function (ExecutePayment $event) use ($paymentHelper, $paymentService, $sessionStorage, $transactionLogData,$config,$basketRepository)
+            {
+                if($paymentHelper->getPaymentKeyByMop($event->getMop())) {
+                    $sessionStorage->getPlugin()->setValue('nnOrderNo',$event->getOrderId());
+                    $sessionStorage->getPlugin()->setValue('mop',$event->getMop());
+                    $paymentKey = $paymentHelper->getPaymentKeyByMop($event->getMop());
+                    $sessionStorage->getPlugin()->setValue('paymentkey', $paymentKey);
+
+                    if(!$paymentService->isRedirectPayment($paymentKey)) {
 						$guaranteeStatus = $paymentService->getGuaranteeStatus($basketRepository->load(), $paymentKey);
 						$basket = $basketRepository->load();			
 						$billingAddressId = $basket->customerInvoiceAddressId;
@@ -243,20 +274,9 @@ class NovalnetServiceProvider extends ServiceProvider
 
 						$name = trim($config->get('Novalnet.' . strtolower($paymentKey) . '_payment_name'));
 						$paymentName = ($name ? $name : $paymentHelper->getTranslatedText(strtolower($paymentKey)));
-						$redirect = $paymentService->isRedirectPayment($paymentKey);	
+						
 							
-						if ($redirect && $paymentKey != 'NOVALNET_CC') { # Redirection payments
-							$serverRequestData = $paymentService->getRequestParameters($basketRepository->load(), $paymentKey);
-                           if (empty($serverRequestData['data']['first_name']) && empty($serverRequestData['data']['last_name'])) {
-							$content = $paymentHelper->getTranslatedText('nn_first_last_name_error');
-							$contentType = 'errorCode';   
-						   } else {
-								 $sessionStorage->getPlugin()->setValue('nnPaymentData', $serverRequestData['data']);
-										$sessionStorage->getPlugin()->setValue('nnPaymentUrl', $serverRequestData['url']);
-										$content = '';
-										$contentType = 'continue';
-						   }
-						} elseif ($paymentKey == 'NOVALNET_CC') { # Credit Card
+						 if ($paymentKey == 'NOVALNET_CC') { # Credit Card
                             $encodedKey = base64_encode('vendor='.$paymentHelper->getNovalnetConfig('novalnet_vendor_id').'&product='.$paymentHelper->getNovalnetConfig('novalnet_product_id').'&server_ip='.$paymentHelper->getServerAddress().'&lang='.$sessionStorage->getLocaleSettings()->language);
                             $nnIframeSource = 'https://secure.novalnet.de/cc?api=' . $encodedKey;
 							$this->getLogger(__METHOD__)->error('cc', 'enter');
@@ -359,21 +379,10 @@ class NovalnetServiceProvider extends ServiceProvider
 								
 								$event->setValue($content);
 								$event->setType($contentType);
-						} 
-                });
+						
 
-        // Listen for the event that executes the payment
-        $eventDispatcher->listen(ExecutePayment::class,
-            function (ExecutePayment $event) use ($paymentHelper, $paymentService, $sessionStorage, $transactionLogData,$config,$basketRepository)
-            {
-                if($paymentHelper->getPaymentKeyByMop($event->getMop())) {
-                    $sessionStorage->getPlugin()->setValue('nnOrderNo',$event->getOrderId());
-                    $sessionStorage->getPlugin()->setValue('mop',$event->getMop());
-                    $paymentKey = $paymentHelper->getPaymentKeyByMop($event->getMop());
-                    $sessionStorage->getPlugin()->setValue('paymentkey', $paymentKey);
-
-                    if(!$paymentService->isRedirectPayment($paymentKey)) {
-			    $this->getLogger(__METHOD__)->error('order creation', 'called');
+        
+			    
                         $paymentService->validateResponse();
                     } else {
                         $paymentProcessUrl = $paymentService->getRedirectPaymentUrl();
