@@ -840,7 +840,6 @@ class CallbackController extends Controller
                 $transactionData->paymentName           = $this->paymentHelper->getPaymentNameByResponse($requestData['payment_id']);
                 $transactionData->orderNo               = $requestData['order_no'];
                 $transactionData->order_total_amount    = (float) $requestData['amount']/100;
-                $transaction
                 $requestData['amount'] = (float) $requestData['amount']/100;
                 $requestData['payment_method'] = $transactionData->paymentName;
 		$requestData['invoice_bankname'] = $this->aryCaptureParams['invoice_bankname'];
@@ -853,7 +852,7 @@ class CallbackController extends Controller
 			'invoice_type'      => $this->aryCaptureParams['invoice_type'];
 			'invoice_account_holder' => $this->aryCaptureParams['invoice_account_holder'];
             ];
-		     $transactionData->additionalInfo  = $additional_info
+		     $transactionData->additionalInfo  = $additional_info;
 		   
                 if( in_array($this->aryCaptureParams['status'], [90,100])  && in_array($this->aryCaptureParams['tid_status'], [85,86,90,91,98,99,100]))
                 {
