@@ -253,8 +253,34 @@ class PaymentController extends Controller
                                    ]);
     }
 	  
-    public function new () {
-	$this->getLogger(__METHOD__)->error('calling', 'enter');    
-    }
+     public function test () {
+	      
+	$serverRequestData = $this->sessionStorage->getPlugin()->getValue('nnPaymentData');
+	$serverRequestData['data']['order_no'] = $this->sessionStorage->getPlugin()->getValue('nnOrderNo');
+	
+        $this->getLogger(__METHOD__)->error('serverRequestData', $serverRequestData);
+	$response = $this->paymentHelper->executeCurl($serverRequestData['data'], $serverRequestData['url']);
+        $responseData = $this->paymentHelper->convertStringToArray($response['response'], '&');
+        $notificationMessage = $this->paymentHelper->getNovalnetStatusText($responseData);
+        $responseData['payment_id'] = (!empty($responseData['payment_id'])) ? $responseData['payment_id'] : $responseData['key'];
+        $isPaymentSuccess = isset($responseData['status']) && $responseData['status'] == '100';
+        $this->getLogger(__METHOD__)->error('response', $responseData);
+        if($isPaymentSuccess)
+        {           
+            if(isset($serverRequestData['data']['pan_hash']))
+            {
+                unset($serverRequestData['data']['pan_hash']);
+            }
+            
+            $this->sessionStorage->getPlugin()->setValue('nnPaymentData', array_merge($serverRequestData['data'], $responseData));
+             $this->paymentService->pushNotification($notificationMessage, 'success', 100);
+            
+        } else {
+	    $orderStatus = trim($this->config->get('Novalnet.novalnet_order_cancel_status'));
+	    $this->paymentHelper->updateOrderStatus((int)$responseData['order_no'], $orderStatus);
+             $this->paymentService->pushNotification($notificationMessage, 'error', 100);
+        }
+	      
+      }
 	
 }
