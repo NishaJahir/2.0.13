@@ -191,6 +191,7 @@ class PaymentHelper
         /** @var Payment $payment */
         $payment = pluginApp(\Plenty\Modules\Payment\Models\Payment::class);
         
+	 $this->getLogger(__METHOD__)->error('req', $requestData);
         $payment->mopId           = (int) $requestData['mop'];
         $payment->transactionType = Payment::TRANSACTION_TYPE_BOOKED_POSTING;
         $payment->status          = ($requestData['type'] == 'confirmed' ? Payment::STATUS_APPROVED : ($requestData['type'] == 'cancel' ? Payment::STATUS_CANCELED : Payment::STATUS_CAPTURED));
@@ -232,8 +233,9 @@ class PaymentHelper
         $paymentProperty[]   = $this->getPaymentProperty(PaymentProperty::TYPE_PAYMENT_TEXT, $cashpayment_comments);    
         }
         $payment->properties = $paymentProperty;
+	    $this->getLogger(__METHOD__)->error('paymenttttt', $payment);
         $paymentObj = $this->paymentRepository->createPayment($payment);
-
+        
         $this->assignPlentyPaymentToPlentyOrder($paymentObj, (int)$requestData['order_no']);
     }
     
