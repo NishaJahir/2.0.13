@@ -78,6 +78,7 @@ class NovalnetOrderConfirmationDataProvider
 					$orderId = (int) $payment->order['orderId'];
 					$comment = '';
 					$db_details = $paymentService->getDatabaseValues($orderId);
+					$paymentHelper->logger('db', $db_details);
 					$comments = '';
 					$comments .= PHP_EOL . $paymentHelper->getTranslatedText('nn_tid') . $db_details['tid'];
 					if(!empty($db_details['test_mode'])) {
@@ -106,6 +107,7 @@ class NovalnetOrderConfirmationDataProvider
 					$comment .= (string) $comments;
 					$comment .= PHP_EOL;
 		}	
+		$paymentHelper->logger('comment', $comment);
 				  $payment_type = (string)$paymentHelper->getPaymentKeyByMop($payment->mopId);
 				  return $twig->render('Novalnet::NovalnetOrderHistory', ['comments' => html_entity_decode($comment),'barzahlentoken' => $barzhlentoken,'payment_type' => html_entity_decode($payment_type),'barzahlenurl' => $barzahlenurl]);
 	}
