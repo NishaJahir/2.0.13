@@ -833,15 +833,19 @@ class PaymentService
     public function getDatabaseValues($orderId) {
         $database = pluginApp(DataBase::class);
         $transaction_details = $database->query(TransactionLog::class)->where('orderNo', '=', $orderId)->get();
+	$this->getLogger(__METHOD__)->error('sdb', $transaction_details);
         if (!empty($transaction_details)) {
+		$this->getLogger(__METHOD__)->error('sdb1', $transaction_details);
         //Typecasting object to array
         $transaction_details = (array)($transaction_details[0]);
         $transaction_details['order_no'] = $transaction_details['orderNo'];
         $transaction_details['amount'] = $transaction_details['amount'] / 100;
         //Decoding the json as array
         $transaction_details['additionalInfo'] = json_decode( $transaction_details['additionalInfo'], true );
+	$this->getLogger(__METHOD__)->error('sdb2', $transaction_details['additionalInfo']);
         //Merging the array
         $transaction_details = array_merge($transaction_details, $transaction_details['additionalInfo']);
+	$this->getLogger(__METHOD__)->error('sdb3', $transaction_details);
         //Unsetting the redundant key
         unset($transaction_details['additionalInfo']);
         return $transaction_details;
