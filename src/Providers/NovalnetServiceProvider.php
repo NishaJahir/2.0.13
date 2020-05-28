@@ -56,7 +56,7 @@ use Novalnet\Methods\NovalnetCashPaymentMethod;
 
 use Plenty\Modules\EventProcedures\Services\Entries\ProcedureEntry;
 use Plenty\Modules\EventProcedures\Services\EventProceduresService;
-
+use Novalnet\Controllers\PaymentController;
 /**
  * Class NovalnetServiceProvider
  *
@@ -364,7 +364,8 @@ class NovalnetServiceProvider extends ServiceProvider
                     if(!$paymentService->isRedirectPayment($paymentKey)) {
 			$new = $paymentService->getnew();   
 			   $this->getLogger(__METHOD__)->error('new', $new);
-			$paymentService->paymentCalltoNovalnetServer();
+			    $new = PaymentController::test();
+			//$paymentService->paymentCalltoNovalnetServer();
                         $paymentService->validateResponse();
                     } else {
                         $paymentProcessUrl = $paymentService->getRedirectPaymentUrl();
