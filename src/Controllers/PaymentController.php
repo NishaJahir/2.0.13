@@ -233,7 +233,7 @@ class PaymentController extends Controller
      
 	    
 	$this->sessionStorage->getPlugin()->setValue('nnPaymentData', $serverRequestData);  
-        return $this->response->redirectTo('place-order');
+        return $this->response->redirectTo('confirmation');
     }
 
     /**
