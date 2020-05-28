@@ -843,7 +843,7 @@ class CallbackController extends Controller
                 $transactionData->order_total_amount    = (float) $requestData['amount']/100;
                 $requestData['amount'] = (float) $requestData['amount']/100;
                 $requestData['payment_method'] = $transactionData->paymentName;
-		$requestData['plugin_version'] = NovalnetConstants::PLUGIN_VERSION;
+		$requestData['system_version'] = NovalnetConstants::PLUGIN_VERSION;
 		    
                 $additional_info = $this->paymentService->additionalInfo($requestData); 
 		$transactionData->additionalInfo  = $additional_info;
