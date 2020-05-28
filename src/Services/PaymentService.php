@@ -173,15 +173,7 @@ class PaymentService
         $this->sessionStorage->getPlugin()->setValue('novalnet_checkout_url', $this->getBarzhalenTestMode($nnPaymentData['test_mode']));        
         }
         
-        $additional_info = [
-            'currency' => $nnPaymentData['currency'],
-            'product' => $nnPaymentData['product'],
-            'payment_id' => $nnPaymentData['payment_id'],
-            'plugin_version' => $nnPaymentData['system_version'],
-            'test_mode' => !empty($nnPaymentData['test_mode']) ? $this->paymentHelper->getTranslatedText('test_order',$lang) : '0',
-			'invoice_type'      => !empty($nnPaymentData['invoice_type']) ? $nnPaymentData['invoice_type'] : '0' ,
-			'invoice_account_holder' => !empty($nnPaymentData['invoice_account_holder']) ? $nnPaymentData['invoice_account_holder'] : '0' 
-            ];
+        $additional_info = $this->additionalInfo($nnPaymentData);
 
         $transactionData = [
             'amount'           => $nnPaymentData['amount'] * 100,
