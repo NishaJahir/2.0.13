@@ -849,8 +849,8 @@ class CallbackController extends Controller
 			$requestData['due_date'] = $this->aryCaptureParams['due_date'];
 		    $additional_info = [
             'test_mode' => !empty($this->aryCaptureParams['test_mode']) ? $this->paymentHelper->getTranslatedText('test_order',$lang) : '0',
-			'invoice_type'      => $this->aryCaptureParams['invoice_type'];
-			'invoice_account_holder' => $this->aryCaptureParams['invoice_account_holder'];
+			'invoice_type'      => $this->aryCaptureParams['invoice_type'],
+			'invoice_account_holder' => $this->aryCaptureParams['invoice_account_holder']
             ];
 		     $transactionData->additionalInfo  = $additional_info;
 		   
