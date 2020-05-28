@@ -762,7 +762,7 @@ class CallbackController extends Controller
         $insertTransactionLog['ref_tid']         = $this->aryCaptureParams['tid'];
         $insertTransactionLog['payment_name']    = $txnHistory->paymentName;
         $insertTransactionLog['order_no']        = $txnHistory->orderNo;
-         $insertTransactionLog['additional_info']   = !empty($txnHistory->additionalInfo) ? $txnHistory->additionalInfo : 0;
+         $insertTransactionLog['additional_info']   = !empty($txnHistory->additionalInfo) ? json_encode($txnHistory->additionalInfo) : 0;
         $this->transaction->saveTransaction($insertTransactionLog);
     }
 
