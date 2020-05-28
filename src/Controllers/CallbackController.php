@@ -29,6 +29,7 @@ use \Plenty\Modules\Authorization\Services\AuthHelper;
 use Plenty\Modules\Payment\Contracts\PaymentRepositoryContract;
 use Plenty\Modules\Payment\Models\Payment;
 use Plenty\Modules\Payment\Models\PaymentProperty;
+use Novalnet\Constants\NovalnetConstants;
 use \stdClass;
 
 /**
@@ -842,17 +843,10 @@ class CallbackController extends Controller
                 $transactionData->order_total_amount    = (float) $requestData['amount']/100;
                 $requestData['amount'] = (float) $requestData['amount']/100;
                 $requestData['payment_method'] = $transactionData->paymentName;
-		$requestData['invoice_bankname'] = $this->aryCaptureParams['invoice_bankname'];
-                        $requestData['invoice_bankplace'] = $this->aryCaptureParams['invoice_bankplace'];
-			$requestData['invoice_iban'] =  $this->aryCaptureParams['invoice_iban']; 
-			$requestData['invoice_bic'] =  $this->aryCaptureParams['invoice_bic'] ;
-			$requestData['due_date'] = $this->aryCaptureParams['due_date'];
-		    $additional_info = [
-            'test_mode' => !empty($this->aryCaptureParams['test_mode']) ? $this->paymentHelper->getTranslatedText('test_order',$requestData['lang']) : '0',
-			'invoice_type'      => $this->aryCaptureParams['invoice_type'],
-			'invoice_account_holder' => $this->aryCaptureParams['invoice_account_holder']
-            ];
-		     $transactionData->additionalInfo  = $additional_info;
+		$requestData['plugin_version'] = NovalnetConstants::PLUGIN_VERSION;
+		    
+                $additional_info = $this->paymentService->additionalInfo($requestData); 
+		$transactionData->additionalInfo  = $additional_info;
 		   
                 if( in_array($this->aryCaptureParams['status'], [90,100])  && in_array($this->aryCaptureParams['tid_status'], [85,86,90,91,98,99,100]))
                 {
