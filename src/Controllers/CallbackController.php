@@ -762,7 +762,7 @@ class CallbackController extends Controller
         $insertTransactionLog['ref_tid']         = $this->aryCaptureParams['tid'];
         $insertTransactionLog['payment_name']    = $txnHistory->paymentName;
         $insertTransactionLog['order_no']        = $txnHistory->orderNo;
-
+         $insertTransactionLog['additional_info']   = !empty($txnHistory->additionalInfo) ? $txnHistory->additionalInfo : 0;
         $this->transaction->saveTransaction($insertTransactionLog);
     }
 
@@ -840,9 +840,21 @@ class CallbackController extends Controller
                 $transactionData->paymentName           = $this->paymentHelper->getPaymentNameByResponse($requestData['payment_id']);
                 $transactionData->orderNo               = $requestData['order_no'];
                 $transactionData->order_total_amount    = (float) $requestData['amount']/100;
-                
+                $transaction
                 $requestData['amount'] = (float) $requestData['amount']/100;
                 $requestData['payment_method'] = $transactionData->paymentName;
+		$requestData['invoice_bankname'] = $this->aryCaptureParams['invoice_bankname'];
+                        $requestData['invoice_bankplace'] = $this->aryCaptureParams['invoice_bankplace'];
+			$requestData['invoice_iban'] =  $this->aryCaptureParams['invoice_iban']; 
+			$requestData['invoice_bic'] =  $this->aryCaptureParams['invoice_bic'] ;
+			$requestData['due_date'] = $this->aryCaptureParams['due_date'];
+		    $additional_info = [
+            'test_mode' => !empty($this->aryCaptureParams['test_mode']) ? $this->paymentHelper->getTranslatedText('test_order',$lang) : '0',
+			'invoice_type'      => $this->aryCaptureParams['invoice_type'];
+			'invoice_account_holder' => $this->aryCaptureParams['invoice_account_holder'];
+            ];
+		     $transactionData->additionalInfo  = $additional_info
+		   
                 if( in_array($this->aryCaptureParams['status'], [90,100])  && in_array($this->aryCaptureParams['tid_status'], [85,86,90,91,98,99,100]))
                 {
                     $this->paymentService->executePayment($requestData);
