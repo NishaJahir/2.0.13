@@ -406,11 +406,13 @@ class NovalnetServiceProvider extends ServiceProvider
 		}
 		$paymentKey = $paymentHelper->getPaymentKeyByMop($payments[0]->mopId);
         $db_details = $paymentService->getDatabaseValues($order->id);
-        
+        $this->getLogger(__METHOD__)->error('pdf db', $db_details);
 		if (in_array($paymentKey, ['NOVALNET_INVOICE', 'NOVALNET_PREPAYMENT', 'NOVALNET_CC', 'NOVALNET_SEPA', 'NOVALNET_CASHPAYMENT', 'NOVALNET_SOFORT', 'NOVALNET_IDEAL', 'NOVALNET_EPS', 'NOVALNET_GIROPAY', 'NOVALNET_PAYPAL', 'NOVALNET_PRZELEWY']) && !empty($db_details['plugin_version'])
 		) {
+			 $this->getLogger(__METHOD__)->error('pdf db111', $db_details);
 		try {
 				$bank_details = array_merge($db_details, json_decode($invoiceDetails, true));
+			$this->getLogger(__METHOD__)->error('pdf123', $bank_details);
 				$comments = '';
 				$comments .= PHP_EOL . $paymentHelper->getTranslatedText('nn_tid') . $db_details['tid'];
 				if(!empty($db_details['test_mode'])) {
@@ -418,6 +420,7 @@ class NovalnetServiceProvider extends ServiceProvider
 				}
 				if($paymentKey == 'NOVALNET_INVOICE' && in_array($tid_status, ['91', '100'])) {
 				$comments .= PHP_EOL . $paymentService->getInvoicePrepaymentComments($bank_details);
+				$this->getLogger(__METHOD__)->error('pdf123ttttttttttttttt', $comments);
 				}
 			        if($paymentKey == 'NOVALNET_CASHPAYMENT') {
 				$comments .= PHP_EOL . $cashpayment_comments;	
