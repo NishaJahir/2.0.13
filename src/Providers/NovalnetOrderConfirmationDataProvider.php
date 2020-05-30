@@ -100,6 +100,7 @@ class NovalnetOrderConfirmationDataProvider
 						$comments .= PHP_EOL . $paymentService->getInvoicePrepaymentComments($bank_details);
 					}
 					if($db_details['payment_id'] == '59' ) {
+						$cashpayment_comments = $sessionStorage->getPlugin()->getValue('cashpayment_comments'));
 						$comments .= $cashpayment_comments;
 					}
 				}
