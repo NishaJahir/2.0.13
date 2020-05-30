@@ -166,25 +166,6 @@ class PaymentService
         $nnPaymentData['payment_method'] = strtolower($this->paymentHelper->getPaymentKeyByMop($nnPaymentData['mop']));
         
         $this->executePayment($nnPaymentData);
-        
-        
-        
-        $additional_info = $this->additionalInfo($nnPaymentData);
-
-        $transactionData = [
-            'amount'           => $nnPaymentData['amount'] * 100,
-            'callback_amount'  => $nnPaymentData['amount'] * 100,
-            'tid'              => $nnPaymentData['tid'],
-            'ref_tid'          => $nnPaymentData['tid'],
-            'payment_name'     => $nnPaymentData['payment_method'],
-            'order_no'         => $nnPaymentData['order_no'],
-            'additional_info'      => !empty($additional_info) ? json_encode($additional_info) : '0',
-        ];
-       
-        if(in_array($nnPaymentData['payment_id'], ['27', '59']) || (in_array($nnPaymentData['tid_status'], ['85','86','90'])))
-            $transactionData['callback_amount'] = 0;    
-
-        $this->transactionLogData->saveTransaction($transactionData);
 
      }
      
@@ -874,11 +855,12 @@ class PaymentService
 		$this->sessionStorage->getPlugin()->setValue('novalnet_checkout_token', $responseData['cp_checkout_token']);
 		$this->sessionStorage->getPlugin()->setValue('novalnet_checkout_url', $this->getBarzhalenTestMode($responseData['test_mode']));        
 		 }
-	        $cashpayment_comments = $this->getCashPaymentComments($responseData);
+	        $responseData['cashpayment_comments'] = $this->getCashPaymentComments($responseData);
 		$this->sessionStorage->getPlugin()->setValue('cashpayment_comments', $cashpayment_comments);
 	    }
 	    
             
+	    $this->saveTransaction($responseData);
             $this->sessionStorage->getPlugin()->setValue('nnPaymentData', array_merge($serverRequestData['data'], $responseData));
             
 	    $this->pushNotification($notificationMessage, 'success', 100);
@@ -900,11 +882,35 @@ class PaymentService
             'plugin_version' => $nnPaymentData['system_version'],
             'test_mode' => !empty($nnPaymentData['test_mode']) ? $this->paymentHelper->getTranslatedText('test_order',$lang) : '0',
 	    'invoice_type'      => !empty($nnPaymentData['invoice_type']) ? $nnPaymentData['invoice_type'] : '0' ,
-            'invoice_account_holder' => !empty($nnPaymentData['invoice_account_holder']) ? $nnPaymentData['invoice_account_holder'] : '0' 
-            ];
+            'invoice_account_holder' => !empty($nnPaymentData['invoice_account_holder']) ? $nnPaymentData['invoice_account_holder'] : '0' ,
+            'cashpayment_comments' => $responseData['cashpayment_comments']
+	     ];
 	    
 	     return $additional_info;
 	     
      }
+		
+			
+			
+			
+			
+    public function saveTransaction($nnPaymentData) {
+     $additional_info = $this->additionalInfo($nnPaymentData);
+
+        $transactionData = [
+            'amount'           => $nnPaymentData['amount'] * 100,
+            'callback_amount'  => $nnPaymentData['amount'] * 100,
+            'tid'              => $nnPaymentData['tid'],
+            'ref_tid'          => $nnPaymentData['tid'],
+            'payment_name'     => $nnPaymentData['payment_method'],
+            'order_no'         => $nnPaymentData['order_no'],
+            'additional_info'      => !empty($additional_info) ? json_encode($additional_info) : '0',
+        ];
+       
+        if(in_array($nnPaymentData['payment_id'], ['27', '59']) || (in_array($nnPaymentData['tid_status'], ['85','86','90'])))
+            $transactionData['callback_amount'] = 0;    
+
+        $this->transactionLogData->saveTransaction($transactionData);
+    }
     
 }
