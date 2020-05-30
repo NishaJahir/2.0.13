@@ -918,13 +918,14 @@ class CallbackController extends Controller
 	 * @return null
 	 */
 	public function sendTransactionConfirmMail($mailContent, $transactionDetails, $order_no)
-	{		
+	{
+		
 		 $addresses = $this->addressObj($order_no);
 			foreach ($addresses->options as $option)
 			{
 				$email = $option->value;
 			}
-				
+			$this->getLogger(__METHOD__)->error('con',$addresses);
 				$toAddress  = $addresses->email;
 				$subject    = 'Callback Execution';
 				$body = '<body style="background:#F6F6F6; font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px; margin:0; padding:0;"><div style="width:55%;height:auto;margin: 0 auto;background:rgb(247, 247, 247);border: 2px solid rgb(223, 216, 216);border-radius: 5px;box-shadow: 1px 7px 10px -2px #ccc;"><div style="min-height: 300px;padding:20px;"><b>Dear Mr./Ms./Mrs.</b>'.$addresses->name2 . ' ' . $addresses->name3.'<br><br>'.$addresses->name2 . ' ' . $addresses->name3.'<br><br><b>Payment Information:</b><br>'.nl2br($mailContent). '<br>'.nl2br($transactionDetails).'</div><div style="width:100%;height:20px;background:#00669D;"></div></div></body>';
