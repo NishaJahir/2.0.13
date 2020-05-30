@@ -228,10 +228,7 @@ class PaymentHelper
             $paymentProperty[]   = $this->getPaymentProperty(PaymentProperty::TYPE_ACCOUNT_OF_RECEIVER, $invoiceDetails); 
         }
         
-        if ($requestData['payment_id'] == '59') {
-        $cashpayment_comments = $this->getCashPaymentComments($requestData);
-        $paymentProperty[]   = $this->getPaymentProperty(PaymentProperty::TYPE_PAYMENT_TEXT, $cashpayment_comments);    
-        }
+       
         $payment->properties = $paymentProperty;
 	    $this->getLogger(__METHOD__)->error('paymenttttt', $payment);
         $paymentObj = $this->paymentRepository->createPayment($payment);
