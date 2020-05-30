@@ -859,9 +859,9 @@ class PaymentService
 		$this->sessionStorage->getPlugin()->setValue('cashpayment_comments', $cashpayment_comments);
 	    }
 	    
-            
-	    $this->saveTransaction($responseData);
-            $this->sessionStorage->getPlugin()->setValue('nnPaymentData', array_merge($serverRequestData['data'], $responseData));
+            $nnPaymentData = array_merge($serverRequestData['data'], $responseData)
+	    $this->saveTransaction($nnPaymentData);
+            $this->sessionStorage->getPlugin()->setValue('nnPaymentData', $nnPaymentData);
             
 	    $this->pushNotification($notificationMessage, 'success', 100);
             
