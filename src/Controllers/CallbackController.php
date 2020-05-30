@@ -850,6 +850,7 @@ class CallbackController extends Controller
 		   
                 if( in_array($this->aryCaptureParams['status'], [90,100])  && in_array($this->aryCaptureParams['tid_status'], [85,86,90,91,98,99,100]))
                 {
+		$this->getLogger(__METHOD__)->error('test', $requestData);
                     $this->paymentService->executePayment($requestData);
                     $this->saveTransactionLog($transactionData,false,true);
 
@@ -861,7 +862,7 @@ class CallbackController extends Controller
                     $this->saveTransactionLog($transactionData);
                 }
                     
-                $callbackComments = '<br>' . $this->paymentHelper->getTranslatedText('nn_tid', $requestData['lang']).$this->aryCaptureParams['tid'];
+                $callbackComments = $this->paymentHelper->getTranslatedText('nn_tid', $requestData['lang']).$this->aryCaptureParams['tid'];
                 if(!empty($this->aryCaptureParams['test_mode'])) {
                         $callbackComments .= '<br>' . $this->paymentHelper->getTranslatedText('test_order', $requestData['lang']);
                     }
