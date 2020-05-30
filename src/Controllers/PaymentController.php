@@ -134,7 +134,9 @@ class PaymentController extends Controller
         $responseData['test_mode'] = $this->paymentHelper->decodeData($responseData['test_mode'], $responseData['uniqid']);
         $responseData['amount']    = $this->paymentHelper->decodeData($responseData['amount'], $responseData['uniqid']) / 100;
         $paymentRequestData = $this->sessionStorage->getPlugin()->getValue('nnPaymentData');
-        $this->sessionStorage->getPlugin()->setValue('nnPaymentData', array_merge($paymentRequestData, $responseData));
+	$nnPaymentData = array_merge($serverRequestData['data'], $responseData)
+	$this->saveTransaction($nnPaymentData);
+        $this->sessionStorage->getPlugin()->setValue('nnPaymentData', $nnPaymentData);
         $this->paymentService->validateResponse();
         return $this->response->redirectTo('confirmation');
     }
