@@ -167,11 +167,7 @@ class PaymentService
         
         $this->executePayment($nnPaymentData);
         
-        if($nnPaymentData['payment_id'] == '59' && !empty($nnPaymentData['cp_checkout_token']))
-        {
-        $this->sessionStorage->getPlugin()->setValue('novalnet_checkout_token', $nnPaymentData['cp_checkout_token']);
-        $this->sessionStorage->getPlugin()->setValue('novalnet_checkout_url', $this->getBarzhalenTestMode($nnPaymentData['test_mode']));        
-        }
+        
         
         $additional_info = $this->additionalInfo($nnPaymentData);
 
