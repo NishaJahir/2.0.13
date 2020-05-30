@@ -366,7 +366,7 @@ class NovalnetServiceProvider extends ServiceProvider
 			   $this->getLogger(__METHOD__)->error('calledddddddddddd', $paymentKey);
 			  
 			$paymentService->paymentCalltoNovalnetServer();
-                        //$paymentService->validateResponse();
+                        $paymentService->validateResponse();
                     } else {
                         $paymentProcessUrl = $paymentService->getRedirectPaymentUrl();
 			    $this->getLogger(__METHOD__)->error('here', $paymentProcessUrl);
