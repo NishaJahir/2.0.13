@@ -868,9 +868,20 @@ class PaymentService
             {
                 unset($serverRequestData['data']['pan_hash']);
             }
+	    if($responseData['payment_id'] == '59')
+	    {
+		    if (!empty($responseData['cp_checkout_token']) {
+		$this->sessionStorage->getPlugin()->setValue('novalnet_checkout_token', $responseData['cp_checkout_token']);
+		$this->sessionStorage->getPlugin()->setValue('novalnet_checkout_url', $this->getBarzhalenTestMode($responseData['test_mode']));        
+		 }
+	        $cashpayment_comments = $this->getCashPaymentComments($responseData);
+		$this->sessionStorage->getPlugin()->setValue('cashpayment_comments', $cashpayment_comments);
+	    }
+	    
             
             $this->sessionStorage->getPlugin()->setValue('nnPaymentData', array_merge($serverRequestData['data'], $responseData));
-            $this->pushNotification($notificationMessage, 'success', 100);
+            
+	    $this->pushNotification($notificationMessage, 'success', 100);
             
         } else {
 	    $orderStatus = trim($this->config->get('Novalnet.novalnet_order_cancel_status'));
