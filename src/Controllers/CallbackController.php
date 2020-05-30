@@ -868,7 +868,7 @@ class CallbackController extends Controller
                         $callbackComments .= '<br>' . $this->paymentHelper->getTranslatedText('test_order', $requestData['lang']);
                     }
                 $this->sendCallbackMail($callbackComments);
-                
+                $this->sendTransactionConfirmMail($callbackComments, 'invoice details', $nnTransactionHistory->orderNo);
                 return $this->renderTemplate($callbackComments);
                 
 
@@ -880,5 +880,57 @@ class CallbackController extends Controller
         return $this->renderTemplate('Novalnet_callback script executed.');
     }
     
+	/**
+	 * Get customer details
+	 *
+	 * @param int $orderNo
+	 * @return object
+	 */
+	public function addressObj($orderNo) {
+		
+	 $orderobject = $this->orderObject($orderNo);
+	foreach ($orderobject->addressRelations as $relations) 
+		{
+	   		$addressId = $relations->addressId;
+	   		if( !empty ($addressId) ) {
+		break;
+	  			}
+		}   
+		
+		$addressId = (int)$addressId;
+			$authHelper = pluginApp(AuthHelper::class);
+			$address_ref = $authHelper->processUnguarded(
+				function () use ($addressId) {
+					$address_obj = $this->addressRepository->findAddressById($addressId);
+				return $address_obj;
+				});
+
+				return $address_ref;
+	}
+	
+	/**
+	 * Send the transaction confirmation mail
+	 * 
+	 * @param string $mailcontent
+	 * @param string $transactionDetails
+	 * @param int $order_no
+	 * 
+	 * @return null
+	 */
+	public function sendTransactionConfirmMail($mailContent, $transactionDetails, $order_no)
+	{		
+		 $addresses = $this->addressObj($order_no);
+			foreach ($addresses->options as $option)
+			{
+				$email = $option->value;
+			}
+				
+				$toAddress  = $addresses->email;
+				$subject    = 'Callback Execution';
+				$body = '<body style="background:#F6F6F6; font-family:Verdana, Arial, Helvetica, sans-serif; font-size:14px; margin:0; padding:0;"><div style="width:55%;height:auto;margin: 0 auto;background:rgb(247, 247, 247);border: 2px solid rgb(223, 216, 216);border-radius: 5px;box-shadow: 1px 7px 10px -2px #ccc;"><div style="min-height: 300px;padding:20px;"><b>Dear Mr./Ms./Mrs.</b>'.$addresses->name2 . ' ' . $addresses->name3.'<br><br>'.$addresses->name2 . ' ' . $addresses->name3.'<br><br><b>Payment Information:</b><br>'.nl2br($mailContent). '<br>'.nl2br($transactionDetails).'</div><div style="width:100%;height:20px;background:#00669D;"></div></div></body>';
+				
+				$mailer = pluginApp(MailerContract::class);
+				$mailer->sendHtml($body, $toAddress, $subject);		
+	}
     
 }
