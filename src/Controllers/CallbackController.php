@@ -764,7 +764,8 @@ class CallbackController extends Controller
         $insertTransactionLog['payment_name']    = $txnHistory->paymentName;
         $insertTransactionLog['order_no']        = $txnHistory->orderNo;
          $insertTransactionLog['additional_info']   = !empty($txnHistory->additionalInfo) ? json_encode($txnHistory->additionalInfo) : 0;
-        $this->transaction->saveTransaction($insertTransactionLog);
+       $this->getLogger(__METHOD__)->error('dblog', $insertTransactionLog);
+	    $this->transaction->saveTransaction($insertTransactionLog);
     }
 
     /**
